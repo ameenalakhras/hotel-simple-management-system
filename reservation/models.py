@@ -27,8 +27,9 @@ class Room(models.Model):
 
 
 class Reserve(models.Model):
-    from_time = models.DateTimeField()
-    to_time = models.DateTimeField()
+    # from_time = models.DateTimeField()
+    # to_time = models.DateTimeField()
+    date = models.DateField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     paid = models.BooleanField()
 
