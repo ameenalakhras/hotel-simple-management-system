@@ -1,6 +1,8 @@
 hotel_management/settings.ini
-
-
+mail/
+.idea/
+venv/
+*/migrations/
 
 # Created by https://www.gitignore.io
 

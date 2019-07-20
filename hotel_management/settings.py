@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'softdelete',
-    'reservation',
-    'hotel_management'
+    'rest_framework',
+    'reservation.apps.ReservationConfig',
+    'api.apps.ApiConfig',
+
 ]
 
 MIDDLEWARE = [

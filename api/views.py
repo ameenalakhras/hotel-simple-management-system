@@ -7,21 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 import datetime
-# from restProject.serializers import IsOwnerOrReadOnly#, IsMadeOrReadOnly
-# from userInfo.serializers import ContactInfoSerializer, OfferSerializer
-# from userInfo.models import ContactInfo, Offer
-# from django.db.utils import IntegrityError
 
 
 class RoomAvailableSet(viewsets.ModelViewSet):
     queryset = Room.objects.filter(available=True)
     serializer_class = RoomAvailableSerializer
     permission_classes = [IsAuthenticated]
-
-
-    def get(self, request):
-        serializer = RoomAvailableSerializer(self.queryset, many=True)
-        return Response(serializer.data)
 
 
 class ReserveViewSet(viewsets.ModelViewSet):
@@ -37,31 +28,19 @@ class ReserveViewSet(viewsets.ModelViewSet):
 
         serializer = ReserveSerializer(data=request.data)
         if serializer.is_valid():
-            import ipdb; ipdb.set_trace()
             requested_room_id = int(request.data["room"])
             requested_room = Room.objects.get(id=requested_room_id)
             date = datetime.datetime.strptime(request.data["date"], "%Y-%m-%d").date()
 
-            room_not_availiable = Reserve.objects.filter(room=requested_room, date=date).exists()
+            try:
+                room_already_taken = Reserve.objects.get(room=requested_room, date=date)
+            except Reserve.DoesNotExist:
+                room_already_taken = None
 
-            if not room_not_availiable:
+            if room_already_taken is None:
+                requested_room.available = False # this one should be done when saved to database not here >> to be edited
+                requested_room.save()
+
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-# class ContactInfoViewSet(viewsets.ModelViewSet):
-#     queryset = ContactInfo.objects.all()
-#     serializer_class = ContactInfoSerializer
-#     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]#, IsMadeOrReadOnly]
-#     def get(self, request):
-#         serializer = ContactInfoSerializer(self.queryset, many=True)
-#         return Response(serializer.data)
-#
-#
-# class OfferViewSet(viewsets.ModelViewSet):
-#     queryset = Offer.objects.all()
-#     serializer_class = OfferSerializer
-#     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-#     def get(self, request):
-#         serializer = OfferSerializer(self.queryset, many=True)
-#         return Response(serializer.data)

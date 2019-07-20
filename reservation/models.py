@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Hotel(models.Model):
@@ -27,11 +28,10 @@ class Room(models.Model):
 
 
 class Reserve(models.Model):
-    # from_time = models.DateTimeField()
-    # to_time = models.DateTimeField()
+    guest = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     paid = models.BooleanField()
 
     def __str__(self):
-        return f"room {self.room.name} from {self.from_time} to {self.to_time}"
+        return f"room {self.room.name} for {self.guest.username} at {self.date}"
