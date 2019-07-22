@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from mail.views import send_mail
 from hotel_management.settings import DEFAULT_FROM_EMAIL, WEBSITE_NAME
 from django.template.loader import render_to_string
+from reservation.functions import calculate_datetime_difference
+import datetime
+
 
 class SoftDeleteModel(models.Model):
     deleted = models.BooleanField()
@@ -41,19 +44,27 @@ class Reserve(SoftDeleteModel):
 
     def delete(self):
         self.deleted = True
+        import ipdb;ipdb.set_trace()
+        naive_date_time = self.date_time.replace(tzinfo=None)
+        current_time = datetime.datetime.now()
+        time_diffrenece_in_days = calculate_datetime_difference(naive_date_time, current_time)
 
-        to_email = self.guest.email
-        from_email = DEFAULT_FROM_EMAIL
-        subject = f"your reservation at {WEBSITE_NAME} is cancelled "
+        if time_diffrenece_in_days > 3:
 
-        context = {
-            "WEBSITE_NAME": WEBSITE_NAME,
-            "self": self
-        }
-        html_content = render_to_string("mail/reservation_cancelled.html", context=context)
+            to_email = self.guest.email
+            from_email = DEFAULT_FROM_EMAIL
+            subject = f"your reservation at {WEBSITE_NAME} is cancelled "
 
-        send_mail(to_emails=to_email, subject=subject, html_content=html_content, from_email=from_email)
-        self.save()
+            context = {
+                "WEBSITE_NAME": WEBSITE_NAME,
+                "self": self
+            }
+            html_content = render_to_string("mail/reservation_cancelled.html", context=context)
+
+            send_mail(to_emails=to_email, subject=subject, html_content=html_content, from_email=from_email)
+            self.save()
+            
+        print("reject the request for it being too close")
 
     def __str__(self):
         return f"room {self.room.name} for {self.guest.username} at {self.date_time}"

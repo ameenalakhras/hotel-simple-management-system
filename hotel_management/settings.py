@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     # 'django.contrib.contenttypes',
     # 'softdelete',
 
+    'django_celery_beat',
+    'django_celery_results',
+
 ]
 
 MIDDLEWARE = [
@@ -142,4 +145,9 @@ config.read('hotel_management/settings.ini')
 SENDGRID_API_KEY = config.get('email', 'SENDGRID_API_KEY')
 DEFAULT_FROM_EMAIL = config.get('email', 'DEFAULT_FROM_EMAIL')
 
-
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
