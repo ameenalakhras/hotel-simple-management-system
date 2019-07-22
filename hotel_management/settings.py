@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from configparser import RawConfigParser
+config = RawConfigParser()
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+WEBSITE_NAME = "hotel management website"
 
 # Application definition
 
@@ -40,6 +44,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'reservation.apps.ReservationConfig',
     'api.apps.ApiConfig',
+
+    # 'django.contrib.contenttypes',
+    # 'softdelete',
 
 ]
 
@@ -58,7 +65,7 @@ ROOT_URLCONF = 'hotel_management.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,4 +132,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+
 STATIC_URL = '/static/'
+
+config.read('hotel_management/settings.ini')
+SENDGRID_API_KEY = config.get('email', 'SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = config.get('email', 'DEFAULT_FROM_EMAIL')
+
+
