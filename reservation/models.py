@@ -44,7 +44,7 @@ class Reserve(SoftDeleteModel):
 
     def delete(self):
         self.deleted = True
-        import ipdb;ipdb.set_trace()
+        # import ipdb;ipdb.set_trace()
         naive_date_time = self.date_time.replace(tzinfo=None)
         current_time = datetime.datetime.now()
         time_diffrenece_in_days = calculate_datetime_difference(naive_date_time, current_time)
@@ -63,7 +63,7 @@ class Reserve(SoftDeleteModel):
 
             send_mail(to_emails=to_email, subject=subject, html_content=html_content, from_email=from_email)
             self.save()
-            
+
         print("reject the request for it being too close")
 
     def __str__(self):
